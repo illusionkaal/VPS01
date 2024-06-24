@@ -11,14 +11,15 @@ RUN apt-get update \
 ENV DEBIAN_FRONTEND=noninteractive \
     LANG=en_US.utf8
 
+# Use the correct architecture for the download URL
 RUN wget -O localtonet.zip https://localtonet.com/download/linux_amd64.zip \
     && unzip localtonet.zip \
     && rm localtonet.zip \
     && chmod +x localtonet \
     && mkdir /run/sshd \
-    && echo "./localtonet --key ${AUTH_TOKEN} -ssh 22 &" >> /docker.sh \
+    && echo "./localtonet --key ${AUTH_TOKEN} -tunnel ssh 22 &" >> /docker.sh \
     && echo "sleep 5" >> /docker.sh \
-    && echo "curl -s http://localhost:4040/api/tunnels | python3 -c \"import sys, json; print(\\\"SSH Info:\\\n\\\", \\\"ssh\\\", \\\"root@\\\"+json.load(sys.stdin)['tunnels'][0]['public_url'][6:].replace(':', ' -p '), \\\"\\\nROOT Password:${PASSWORD}\\\")\" || echo \"\nError: AUTH_TOKEN, Reset Localtonet token & try\n\"" >> /docker.sh \
+    && echo "curl -s http://localhost:4040/api/tunnels | python3 -c \"import sys, json; print(\\\"SSH Info:\\\n\\\", \\\"ssh\\\", \\\"root@\\\"+json.load(sys.stdin)['tunnels'][0]['public_url'][6:].replace(':', ' -p '), \\\"\\\nROOT Password:${PASSWORD}\\\")\" || echo \\\"\\nError: AUTH_TOKEN, Reset Localtonet token & try\\n\\\"" >> /docker.sh \
     && echo '/usr/sbin/sshd -D' >> /docker.sh \
     && echo 'PermitRootLogin yes' >> /etc/ssh/sshd_config \
     && echo "PasswordAuthentication yes" >> /etc/ssh/sshd_config \
