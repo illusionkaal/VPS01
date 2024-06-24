@@ -1,1 +1,3 @@
-# Vps
+AUTH_TOKEN
+
+PASSWORD
