@@ -11,7 +11,14 @@ RUN apt-get update \
 ENV DEBIAN_FRONTEND=noninteractive \
     LANG=en_US.utf8
 
-RUN wget -O ngrok.zip https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-amd64.zip \
+RUN arch=$(uname -m) && \
+    if [ "$arch" = "x86_64" ]; then \
+        wget -O ngrok.zip https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-amd64.zip; \
+    elif [ "$arch" = "aarch64" ]; then \
+        wget -O ngrok.zip https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-arm64.zip; \
+    else \
+        echo "Unsupported architecture: $arch"; exit 1; \
+    fi \
     && unzip ngrok.zip \
     && rm /ngrok.zip \
     && chmod +x /ngrok \
